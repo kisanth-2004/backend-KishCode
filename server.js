@@ -9,6 +9,7 @@
 
 // const connectDB = require("./config/db");
 // const reviewRoutes = require("./routes/reviewRoutes");
+// const bookingRoutes = require("./routes/bookingRoutes");
 
 // dotenv.config();
 
@@ -47,6 +48,12 @@
 // app.use("/api/reviews", reviewRoutes);
 
 // // =========================
+// // Booking Routes
+// // =========================
+
+// app.use("/api/bookings", bookingRoutes);
+
+// // =========================
 // // Server
 // // =========================
 
@@ -55,7 +62,6 @@
 // app.listen(PORT, () => {
 //   console.log(`KishCode Backend running on port ${PORT}`);
 // });
-
 
 const express = require("express");
 const cors = require("cors");
@@ -81,7 +87,32 @@ connectDB();
 // Middleware
 // =========================
 
-app.use(cors());
+// Allowed Frontend Origins
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://bucolic-dieffenbachia-5b4359.netlify.app",
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests without origin
+      // Example: Postman, server-to-server requests
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("dev"));
